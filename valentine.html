@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Be My Valentine 💕</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #ffeef8, #ffe0f0);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Question box */
+.container {
+    background: white;
+    padding: 60px 80px;
+    border-radius: 30px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(255,105,180,0.3);
+    z-index: 10;
+}
+
+h1 {
+    color: #ff69b4;
+    font-size: 3em;
+}
+
+.heart {
+    font-size: 4em;
+    animation: heartbeat 1.5s infinite;
+}
+
+@keyframes heartbeat {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.question {
+    font-size: 1.8em;
+    color: #ff1493;
+    margin: 25px 0;
+}
+
+button {
+    padding: 18px 45px;
+    font-size: 1.5em;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.yes-btn {
+    background: linear-gradient(135deg, #ff69b4, #ff1493);
+    color: white;
+}
+
+/* No button */
+.no-btn {
+    background: linear-gradient(135deg, #ddd, #bbb);
+    color: #666;
+    position: fixed;
+    transition: left 0.4s ease, top 0.4s ease;
+}
+
+/* Emoji slide bundle */
+.emoji-bundle {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 2.5em;
+    z-index: 9999; /* 👈 always above card */
+    pointer-events: none;
+    animation: burstOut 1.2s ease-out forwards;
+}
+
+
+@keyframes burstOut {
+    from {
+        transform: translate(0, 0) scale(0.3);
+        opacity: 0;
+    }
+    to {
+        transform: translate(var(--dx), var(--dy)) scale(1);
+        opacity: 1;
+    }
+}
+
+.emoji-text {
+    font-size: 0.45em;
+    background: white;
+    padding: 10px 16px;
+    border-radius: 14px;
+    color: #ff1493;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(255,105,180,0.3);
+}
+
+/* Cards */
+.cards-container {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #fff5f7, #ffe8f0);
+    padding: 50px;
+    overflow-y: auto;
+}
+
+.cards-container.active {
+    display: block;
+}
+
+.cards-title {
+    text-align: center;
+    font-size: 3em;
+    color: #ff69b4;
+    margin-bottom: 40px;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+    gap: 30px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(255,105,180,0.2);
+    position: relative;
+    animation: floatCard 3s ease-in-out infinite;
+}
+
+@keyframes floatCard {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.card h3 {
+    color: #ff69b4;
+}
+
+/* Butterflies */
+.butterfly {
+    position: absolute;
+    font-size: 1.8em;
+    animation: butterflyFloat 4s ease-in-out infinite;
+}
+
+@keyframes butterflyFloat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+/* Dynamic slide animation (set via JS) */
+@keyframes slideAcross {
+    from { transform: translate(var(--startX), var(--startY)); }
+    to   { transform: translate(var(--endX), var(--endY)); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container" id="questionContainer">
+    <h1>Hey Beautiful 💕</h1>
+    <div class="heart">❤️</div>
+    <p class="question">Will you be my Valentine?</p>
+
+    <button class="yes-btn" onclick="sayYes()">Yes 💕</button>
+    <button class="no-btn" id="noBtn"
+        onmouseenter="runAway()"
+        onclick="runAway()">No</button>
+</div>
+
+<div class="cards-container" id="cardsContainer">
+    <h1 class="cards-title">Messages for You 💕</h1>
+    <div class="cards-grid" id="cardsGrid"></div>
+</div>
+
+<script>
+let attemptIndex = 0;
+
+const cryingEmojis = ['😢','😭','🥺','😿','💔'];
+const convinceTexts = [
+    "Wait… don’t say no yet 🥺",
+    "Just hear me out 💕",
+    "I promise I’m worth it 😢",
+    "My heart’s already yours 💔",
+    "One chance, that’s all 😿",
+    "You won’t regret this 😭",
+    "Let me make you smile 🥺"
+];
+
+function runAway() {
+    const noBtn = document.getElementById('noBtn');
+    const padding = 20;
+
+    const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+    const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+
+    noBtn.style.left = Math.random() * maxX + 'px';
+    noBtn.style.top  = Math.random() * maxY + 'px';
+
+    spawnSlidingEmoji();
+}
+
+function spawnSlidingEmoji() {
+    if (attemptIndex >= convinceTexts.length) return;
+
+    const bundle = document.createElement('div');
+    bundle.className = 'emoji-bundle';
+
+    const emoji = document.createElement('div');
+    emoji.textContent = cryingEmojis[Math.floor(Math.random() * cryingEmojis.length)];
+
+    const text = document.createElement('div');
+    text.className = 'emoji-text';
+    text.textContent = convinceTexts[attemptIndex];
+
+    bundle.appendChild(emoji);
+    bundle.appendChild(text);
+
+    /* Start from behind the card (center of screen) */
+    bundle.style.left = '50%';
+    bundle.style.top = '50%';
+
+    /* Random burst direction */
+    const angle = (attemptIndex * 0.9) + (Math.random() * 0.6);
+   const distance = 180 + Math.random() * 120;
+
+
+    const dx = Math.cos(angle) * distance;
+    const dy = Math.sin(angle) * distance;
+
+    bundle.style.setProperty('--dx', `${dx}px`);
+    bundle.style.setProperty('--dy', `${dy}px`);
+
+    document.body.appendChild(bundle);
+    attemptIndex++;
+}
+
+
+function sayYes() {
+    document.querySelectorAll('.emoji-bundle').forEach(e => e.remove());
+    document.getElementById('questionContainer').style.display = 'none';
+
+    const cards = document.getElementById('cardsContainer');
+    cards.classList.add('active');
+
+    const grid = document.getElementById('cardsGrid');
+    const messages = [
+        "You just made my heart race 💖",
+        "This yes means everything ✨",
+        "I promise to choose you 💌",
+        "You’re my favorite person 💕",
+        "Let’s make memories ❤️",
+        "Forever starts now 💫"
+    ];
+
+    messages.forEach((msg,i)=>{
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `<h3>Message ${i+1}</h3><p>${msg}</p>`;
+
+        for(let b=0;b<2;b++){
+            const butterfly = document.createElement('div');
+            butterfly.className = 'butterfly';
+            butterfly.textContent = '🦋';
+            butterfly.style.top = Math.random()*80+'%';
+            butterfly.style.left = Math.random()*80+'%';
+            card.appendChild(butterfly);
+        }
+
+        grid.appendChild(card);
+    });
+}
+</script>
+
+</body>
+</html>

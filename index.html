@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bloom & Co.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', system-ui, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f8f9fc, #eef1f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .store-card {
+      background: white;
+      width: 90%;
+      max-width: 420px;
+      padding: 40px 30px;
+      border-radius: 24px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+      text-align: center;
+      animation: fadeUp 0.8s ease;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .store-card h1 {
+      font-size: 1.9rem;
+      color: #222;
+      margin-bottom: 10px;
+    }
+
+    .store-card p {
+      font-size: 0.95rem;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .store-card .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      background: #f2f4ff;
+      color: #4b5cff;
+      font-size: 0.8rem;
+      border-radius: 20px;
+      margin-bottom: 18px;
+    }
+
+    .store-card button {
+      background: linear-gradient(135deg, #ff4d6d, #ff758f);
+      border: none;
+      color: white;
+      padding: 16px 24px;
+      width: 100%;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 10px 25px rgba(255, 77, 109, 0.35);
+    }
+
+    .store-card button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(255, 77, 109, 0.45);
+    }
+
+    .store-card .footer-text {
+      margin-top: 20px;
+      font-size: 0.75rem;
+      color: #aaa;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="store-card">
+    <div class="badge">Featured Collection</div>
+    <h1>Bloom & Co.</h1>
+    <p>
+      Discover our limited seasonal collection designed to celebrate
+      moments that matter. Thoughtfully crafted, beautifully presented.
+    </p>
+
+    <button onclick="enterStore()">Click to visit the store</button>
+
+    <div class="footer-text">
+      © 2026 Bloom & Co. All rights reserved.
+    </div>
+  </div>
+
+  <script>
+    function enterStore() {
+      window.location.href = "valentine.html";
+    }
+  </script>
+
+</body>
+</html>
